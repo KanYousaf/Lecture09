@@ -1,8 +1,11 @@
 package com.example.kanwalpc.storagettscamera;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -49,8 +52,19 @@ public class DetailActivity extends AppCompatActivity {
 
 
     public void captured_pressed(View view) {
-        Intent camera_intent=new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(camera_intent,REQ_CODE);
+        // Check permission for CAMERA
+        if (ActivityCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Check Permissions Now
+            // Callback onRequestPermissionsResult interceptado na Activity MainActivity
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    DetailActivity.REQ_CODE);
+        } else {
+            // permission has been granted, continue as usual
+            Intent camera_intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(camera_intent, REQ_CODE);
+        }
     }
 
     @Override

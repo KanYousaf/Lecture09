@@ -27,15 +27,13 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         show_image=(ImageView)this.findViewById(R.id.display_captured_image);
         display_data=(TextView)this.findViewById(R.id.display_detail_record);
-        readFromFile();
-
-
+        readFromInternalFile();
     }
 
-    public void readFromFile(){
+    public void readFromInternalFile(){
         try {
             String allText="";
-            scan=new Scanner(openFileInput("own_gre_dictionary"));
+            scan=new Scanner(openFileInput("gre_own_words.txt"));
             while(scan.hasNextLine()){
                 String line=scan.nextLine();
                 allText+=line;
@@ -48,6 +46,8 @@ public class DetailActivity extends AppCompatActivity {
             scan.close();
         }
     }
+
+
 
 
 

@@ -27,63 +27,51 @@ public class DefinitionTTS extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_definition_tts);
-        display_recorded_voice = (TextView) this.findViewById(R.id.display_recorded_Voice);
 
-        tts = new TextToSpeech(DefinitionTTS.this, new TextToSpeech.OnInitListener() {
+        tts=new TextToSpeech(DefinitionTTS.this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int i) {
-                convertToVoice();
+                convertTextToSpeech();
             }
         });
 
+        display_recorded_voice = (TextView) this.findViewById(R.id.display_recorded_Voice);
 
+        dictionary=new HashMap<>();
         display_definition = (TextView) this.findViewById(R.id.display_gre_definiton);
-        dictionary = new HashMap<>();
+        readFromRawFile();
 
-        Intent receiveIntent = getIntent();
-        String gre_word_to_find = receiveIntent.getStringExtra("word");
+        Intent receiver=getIntent();
+        String gre_word_received=receiver.getStringExtra("words");
 
-        readFromFileAndDisplay();
-        if (dictionary.containsKey(gre_word_to_find)) {
-            display_definition.setText(dictionary.get(gre_word_to_find));
+        if(dictionary.containsKey(gre_word_received)){
+            display_definition.setText(dictionary.get(gre_word_received));
         }
+
+
+
     }
 
-    public void readFromFileAndDisplay() {
-        Scanner scan = new Scanner(getResources().openRawResource(R.raw.grewords));
-        while (scan.hasNextLine()) {
-            String line = scan.nextLine();
-            String parts[] = line.split("\t");
-            if (parts.length >= 2) {
+    public void readFromRawFile(){
+        Scanner output=new Scanner(getResources().openRawResource(R.raw.grewords));
+        while(output.hasNextLine()){
+            String value=output.nextLine();
+            String parts[] = value.split("\t");
+            if(parts.length>=2) {
                 String gre_word = parts[0];
                 String gre_definition = parts[1];
                 dictionary.put(gre_word, gre_definition);
             }
         }
-    }
+  }
 
-    public void convertToVoice() {
+    public void convertTextToSpeech(){
         tts.setLanguage(currentSpokenLanguage);
-        tts.speak(display_definition.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+        String toSpeak=display_definition.getText().toString();
+        tts.speak(toSpeak,TextToSpeech.QUEUE_FLUSH, null);
+
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (tts != null) {
-            tts.stop();
-            tts.shutdown();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (tts != null) {
-            tts.stop();
-            tts.shutdown();
-        }
-    }
 
     public void press_listen_button(View view) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -113,4 +101,7 @@ public class DefinitionTTS extends AppCompatActivity {
                 break;
         }
     }
+
+
+
 }
